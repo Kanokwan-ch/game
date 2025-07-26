@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Insertion Sort</title>
+<title>เกม Insertion Sort แบบคลาสสิค + หลักการ C++</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
   body {
@@ -120,16 +120,6 @@
     margin: 0 5px;
     text-align: center;
   }
-  #cppCode {
-    background: #1e293b;
-    color: #f8fafc;
-    font-family: 'Courier New', Courier, monospace;
-    border-radius: 15px;
-    padding: 15px;
-    margin-top: 30px;
-    max-height: 250px;
-    overflow-y: auto;
-  }
   #finalScoreScreen {
     text-align: center;
   }
@@ -145,24 +135,17 @@
 <body>
 
 <div class="container" id="menuScreen">
-  <h2>🌸Insertion Sort🌸</h2>
-  <input type="text" id="playerName" placeholder="ชื่อนักเรียน" />
-  <select id="classSelect">
-    <option value="">-- เลือกห้องเรียน --</option>
-    <option value="ปวช.1/1">ปวช.1/1</option>
-    <option value="ปวช.1/2">ปวช.1/2</option>
-    <option value="ปวช.2/1">ปวช.2/1</option>
-  </select>
+  <h2>🌸 Insertion Sort 🌸</h2>
   <button id="btnRules" type="button">📚 อ่านกติกาการเล่น</button>
   <button id="btnStart" type="button">🎮 เริ่มเกม</button>
 </div>
 
 <div class="container" id="rulesScreen" style="display:none;">
   <h2>📖 กติกาการเล่น</h2>
-  <p>เรียนรู้การเรียงลำดับแบบแทรก (Insertion Sort) ผ่านเกมแบบโต้ตอบ</p>
   <ul>
     <li>เกมมี 3 ด่าน ยากขึ้นเรื่อย ๆ</li>
     <li>ต้องผ่านด่านก่อนหน้า เพื่อไปด่านถัดไป</li>
+    <li>ระบบจะสุ่มตัวเลข 5-7 ตัว</li>
     <li>กด "สลับ" หากต้องการสลับเลขสองตำแหน่งที่กำลังเปรียบเทียบ</li>
     <li>กด "ไม่สลับ" หากเลขอยู่ในตำแหน่งถูกต้องแล้ว</li>
     <li>กด "แทรก" เมื่อตัวเลขอยู่ตำแหน่งที่เหมาะสมเพื่อไปเลขถัดไป</li>
@@ -175,7 +158,6 @@
   <h3 id="playerInfo"></h3>
   <div class="stats">
     <div>ด่าน <br /><span id="currentLevel">1</span>/3</div>
-    <div>เคลื่อนที่ <br /><span id="totalMoves">0</span></div>
   </div>
 
   <div class="number-box" id="numberBox"></div>
@@ -198,16 +180,12 @@
 </div>
 
 <script>
-  let playerName = '';
-  let playerClass = '';
   let numbers = [];
-  let currentIndex = 1; // i ใน insertion sort
-  let currentInner = 1; // j ใน insertion sort + 1 (ตำแหน่งเปรียบเทียบ)
+  let currentIndex = 1;
+  let currentInner = 1;
   let inserted = false;
   let totalMoves = 0;
-  let score = 0;
   let currentLevel = 1;
-  let totalScore = 0; // คะแนนสะสมรวมทุกด่าน
 
   const menuScreen = document.getElementById('menuScreen');
   const rulesScreen = document.getElementById('rulesScreen');
@@ -232,16 +210,20 @@
     gameScreen.style.display = 'block';
     finalScoreScreen.style.display = 'none';
   }
+  function showFinalScore() {
+    menuScreen.style.display = 'none';
+    rulesScreen.style.display = 'none';
+    gameScreen.style.display = 'none';
+    finalScoreScreen.style.display = 'block';
+  }
 
   document.getElementById('btnRules').onclick = showRules;
   document.getElementById('btnBackToMenu').onclick = showMenu;
   document.getElementById('btnPlayNow').onclick = () => {
-    if(!validateInputs()) return;
     startGame();
     showGame();
   };
   document.getElementById('btnStart').onclick = () => {
-    if(!validateInputs()) return;
     startGame();
     showGame();
   };
@@ -255,20 +237,9 @@
   };
   document.getElementById('btnRestart').onclick = () => {
     currentLevel = 1;
-    totalScore = 0;
     startGame();
     showGame();
   };
-
-  function validateInputs() {
-    playerName = document.getElementById('playerName').value.trim();
-    playerClass = document.getElementById('classSelect').value;
-    if(!playerName || !playerClass) {
-      alert('กรุณากรอกชื่อและเลือกห้องก่อนนะคะ 🌸');
-      return false;
-    }
-    return true;
-  }
 
   function generateUniqueNumbers(count) {
     const arr = [];
@@ -281,7 +252,6 @@
   }
 
   function startGame() {
-    score = 0;
     totalMoves = 0;
     currentIndex = 1;
     currentInner = 1;
@@ -289,7 +259,6 @@
     const count = currentLevel === 1 ? 5 : currentLevel === 2 ? 6 : 7;
     numbers = generateUniqueNumbers(count);
     updateUI();
-    document.getElementById('playerInfo').textContent = `👋 ${playerName} | 🏫 ${playerClass}`;
   }
 
   function handleSwap() {
@@ -298,15 +267,22 @@
       currentInner--;
       inserted = false;
       totalMoves++;
-      score += 10;
       updateUI();
     } else {
       alert('ไม่สามารถสลับได้ เพราะเลขที่เปรียบเทียบไม่ตรงเงื่อนไข 😅');
-      score = Math.max(0, score - 5);
       updateUI();
     }
   }
 
+  function handleNoSwap() {
+    if(currentInner === 0 || numbers[currentInner] >= numbers[currentInner - 1]) {
+      inserted = true;
+      totalMoves++;
+      updateUI();
+    } else {
+      alert('ยังไม่ถูกต้อง ต้องสลับก่อนนะ! 🤔');
+      updateUI();
+    }
   }
 
   function handleInsert() {
@@ -322,6 +298,17 @@
     currentInner = currentIndex;
     inserted = false;
     updateUI();
+  }
+
+  function completeLevel() {
+    if(currentLevel < 3) {
+      alert(`🎉 ยินดีด้วย! ผ่านด่านที่ ${currentLevel}`);
+      currentLevel++;
+      startGame();
+    } else {
+      showFinalScore();
+      document.getElementById('finalMessage').textContent = `คุณเรียงครบทั้ง 3 ด่านแล้ว เก่งมาก! 🌟✨`;
+    }
   }
 
   function updateUI() {
@@ -355,12 +342,9 @@
     } else {
       explanation.textContent = `✅ เลข ${numbers[currentInner]} ถูกแทรกเรียบร้อย! ไปเลขตัวถัดไป`;
     }
-    document.getElementById('currentScore').textContent = score;
-    document.getElementById('totalScore').textContent = totalScore;
-    document.getElementById('currentLevel').textContent = currentLevel;
-    document.getElementById('totalMoves').textContent = totalMoves;
 
-    // เปิด/ปิดปุ่ม
+    document.getElementById('currentLevel').textContent = currentLevel;
+
     document.getElementById('btnInsert').disabled = !inserted;
     document.getElementById('btnSwap').disabled = inserted;
     document.getElementById('btnNoSwap').disabled = inserted;
@@ -372,11 +356,9 @@
   document.getElementById('btnShuffle').onclick = () => {
     if(confirm('ต้องการสุ่มเลขใหม่ใช่ไหม?')) startGame();
   };
-  
-  // เปิดหน้าเมนูตอนโหลด
+
   showMenu();
 </script>
 
 </body>
 </html>
-
