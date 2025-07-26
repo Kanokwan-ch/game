@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>เกม Insertion Sort แบบคลาสสิค + หลักการ C++</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
+  body {
+    font-family: 'Kanit', sans-serif;
+    background: linear-gradient(135deg, #fdf2f8 0%, #f0f9ff 30%, #f0fdf4 100%);
+    margin: 0; padding: 20px;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh;
+  }
+  .container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    padding: 30px;
+    max-width: 600px;
+    width: 100%;
+  }
+  h2,h3 {
+    text-align: center;
+    color: #8b7ab8;
+  }
+  input, select, button {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: 15px;
+    border: 2px solid #ddd;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  button {
+    background: linear-gradient(135deg, #ddd6fe 0%, #bfdbfe 50%, #d1fae5 100%);
+    cursor: pointer;
+    color: #4b5563;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: linear-gradient(135deg, #a78bfa 0%, #818cf8 50%, #6ee7b7 100%);
+    color: #1f2937;
+  }
+  button:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+  .number-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .number {
+    background: #f3f4f6;
+    border-radius: 15px;
+    padding: 20px 25px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    border: 2px solid #e5e7eb;
+    position: relative;
+    user-select: none;
+  }
+  .sorted {
+    background: #a7f3d0;
+    border-color: #059669;
+    color: #064e3b;
+  }
+  .comparing {
+    background: #fde68a;
+    border-color: #ca8a04;
+    color: #78350f;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .arrow {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: #8b7ab8;
+    animation: bounce 1.5s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+  }
+  #explanation {
+    background: #f0f9ff;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #475569;
+    min-height: 70px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    color: #6b7280;
+    font-weight: 600;
+  }
+  .stats div {
+    background: #fef3c7;
+    padding: 10px 20px;
+    border-radius: 15px;
+    flex: 1;
+    margin: 0 5px;
+    text-align: center;
+  }
+  #cppCode {
+    background: #1e293b;
+    color: #f8fafc;
+    font-family: 'Courier New', Courier, monospace;
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 30px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  #finalScoreScreen {
+    text-align: center;
+  }
+  #finalScoreScreen h2 {
+    color: #10b981;
+  }
+  #finalScoreScreen p {
+    font-size: 1.3rem;
+    margin-top: 15px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="menuScreen">
+  <h2>🌸 เกม Insertion Sort แบบคลาสสิค 🌸</h2>
+  <input type="text" id="playerName" placeholder="ชื่อนักเรียน" />
+  <select id="classSelect">
+    <option value="">-- เลือกห้องเรียน --</option>
+    <option value="ปวช.1/1">ปวช.1/1</option>
+    <option value="ปวช.1/2">ปวช.1/2</option>
+    <option value="ปวช.2/1">ปวช.2/1</option>
+  </select>
+  <button id="btnRules" type="button">📚 อ่านกติกาการเล่น</button>
+  <button id="btnStart" type="button">🎮 เริ่มเกม</button>
+</div>
+
+<div class="container" id="rulesScreen" style="display:none;">
+  <h2>📖 กติกาการเล่น</h2>
+  <p>เรียนรู้การเรียงลำดับแบบแทรก (Insertion Sort) ผ่านเกมแบบโต้ตอบ</p>
+  <ul>
+    <li>เกมมี 3 ด่าน ยากขึ้นเรื่อย ๆ</li>
+    <li>ต้องผ่านด่านก่อนหน้า เพื่อไปด่านถัดไป</li>
+    <li>ระบบจะสุ่มตัวเลข 5-7 ตัว</li>
+    <li>กด "สลับ" หากต้องการสลับเลขสองตำแหน่งที่กำลังเปรียบเทียบ</li>
+    <li>กด "ไม่สลับ" หากเลขอยู่ในตำแหน่งถูกต้องแล้ว</li>
+    <li>กด "แทรก" เมื่อตัวเลขอยู่ตำแหน่งที่เหมาะสมเพื่อไปเลขถัดไป</li>
+    <li>คะแนน: +10 ทำถูก, -5 ทำผิด</li>
+    <li>ต้องได้คะแนน >= 70% จึงผ่านด่าน</li>
+  </ul>
+  <button id="btnBackToMenu" type="button">🔙 กลับหน้าแรก</button>
+  <button id="btnPlayNow" type="button">🎮 เล่นเลย</button>
+</div>
+
+<div class="container" id="gameScreen" style="display:none;">
+  <h3 id="playerInfo"></h3>
+  <div class="stats">
+    <div>ด่าน <br /><span id="currentLevel">1</span>/3</div>
+    <div>คะแนนด่านนี้ <br /><span id="currentScore">0</span></div>
+    <div>คะแนนรวม <br /><span id="totalScore">0</span></div>
+    <div>เคลื่อนที่ <br /><span id="totalMoves">0</span></div>
+  </div>
+
+  <div class="number-box" id="numberBox"></div>
+  <div id="explanation">คำอธิบายจะแสดงที่นี่</div>
+
+  <div>
+    <button id="btnSwap" type="button">🔄 สลับ</button>
+    <button id="btnNoSwap" type="button">✅ ไม่สลับ</button>
+    <button id="btnInsert" type="button" disabled>📍 แทรก</button>
+    <button id="btnShuffle" type="button">🎲 สุ่มใหม่</button>
+  </div>
+  <button id="btnBackMenu" type="button" style="margin-top:15px;">🏠 กลับหน้าแรก</button>
+</div>
+
+<div class="container" id="finalScoreScreen" style="display:none;">
+  <h2>🎉 จบเกมแล้ว! 🎉</h2>
+  <p id="finalMessage"></p>
+  <button id="btnRestart" type="button">เล่นใหม่</button>
+  <button id="btnBackMenu2" type="button">กลับหน้าแรก</button>
+</div>
+
+<script>
+  let playerName = '';
+  let playerClass = '';
+  let numbers = [];
+  let currentIndex = 1; // i ใน insertion sort
+  let currentInner = 1; // j ใน insertion sort + 1 (ตำแหน่งเปรียบเทียบ)
+  let inserted = false;
+  let totalMoves = 0;
+  let score = 0;
+  let currentLevel = 1;
+  let totalScore = 0; // คะแนนสะสมรวมทุกด่าน
+
+  const menuScreen = document.getElementById('menuScreen');
+  const rulesScreen = document.getElementById('rulesScreen');
+  const gameScreen = document.getElementById('gameScreen');
+  const finalScoreScreen = document.getElementById('finalScoreScreen');
+
+  function showMenu() {
+    menuScreen.style.display = 'block';
+    rulesScreen.style.display = 'none';
+    gameScreen.style.display = 'none';
+    finalScoreScreen.style.display = 'none';
+  }
+  function showRules() {
+    menuScreen.style.display = 'none';
+    rulesScreen.style.display = 'block';
+    gameScreen.style.display = 'none';
+    finalScoreScreen.style.display = 'none';
+  }
+  function showGame() {
+    menuScreen.style.display = 'none';
+    rulesScreen.style.display = 'none';
+    gameScreen.style.display = 'block';
+    finalScoreScreen.style.display = 'none';
+  }
+  function showFinalScore() {
+    menuScreen.style.display = 'none';
+    rulesScreen.style.display = 'none';
+    gameScreen.style.display = 'none';
+    finalScoreScreen.style.display = 'block';
+  }
+
+  document.getElementById('btnRules').onclick = showRules;
+  document.getElementById('btnBackToMenu').onclick = showMenu;
+  document.getElementById('btnPlayNow').onclick = () => {
+    if(!validateInputs()) return;
+    startGame();
+    showGame();
+  };
+  document.getElementById('btnStart').onclick = () => {
+    if(!validateInputs()) return;
+    startGame();
+    showGame();
+  };
+  document.getElementById('btnBackMenu').onclick = () => {
+    if(confirm('คุณต้องการออกจากเกมและกลับหน้าแรก?')) {
+      showMenu();
+    }
+  };
+  document.getElementById('btnBackMenu2').onclick = () => {
+    showMenu();
+  };
+  document.getElementById('btnRestart').onclick = () => {
+    currentLevel = 1;
+    totalScore = 0;
+    startGame();
+    showGame();
+  };
+
+  function validateInputs() {
+    playerName = document.getElementById('playerName').value.trim();
+    playerClass = document.getElementById('classSelect').value;
+    if(!playerName || !playerClass) {
+      alert('กรุณากรอกชื่อและเลือกห้องก่อนนะคะ 🌸');
+      return false;
+    }
+    return true;
+  }
+
+  function generateUniqueNumbers(count) {
+    const arr = [];
+    const maxNum = currentLevel === 1 ? 50 : currentLevel === 2 ? 75 : 99;
+    while(arr.length < count) {
+      let r = Math.floor(Math.random() * maxNum) + 1;
+      if(!arr.includes(r)) arr.push(r);
+    }
+    return arr;
+  }
+
+  function startGame() {
+    score = 0;
+    totalMoves = 0;
+    currentIndex = 1;
+    currentInner = 1;
+    inserted = false;
+    const count = currentLevel === 1 ? 5 : currentLevel === 2 ? 6 : 7;
+    numbers = generateUniqueNumbers(count);
+    updateUI();
+    document.getElementById('playerInfo').textContent = `👋 ${playerName} | 🏫 ${playerClass}`;
+  }
+
+  function handleSwap() {
+    if(currentInner > 0 && numbers[currentInner] < numbers[currentInner - 1]) {
+      [numbers[currentInner], numbers[currentInner - 1]] = [numbers[currentInner - 1], numbers[currentInner]];
+      currentInner--;
+      inserted = false;
+      totalMoves++;
+      score += 10;
+      updateUI();
+    } else {
+      alert('ไม่สามารถสลับได้ เพราะเลขที่เปรียบเทียบไม่ตรงเงื่อนไข 😅');
+      score = Math.max(0, score - 5);
+      updateUI();
+    }
+  }
+
+  function handleNoSwap() {
+    if(currentInner === 0 || numbers[currentInner] >= numbers[currentInner - 1]) {
+      inserted = true;
+      totalMoves++;
+      score += 10;
+      updateUI();
+    } else {
+      alert('ยังไม่ถูกต้อง ต้องสลับก่อนนะ! 🤔');
+      score = Math.max(0, score - 5);
+      updateUI();
+    }
+  }
+
+  function handleInsert() {
+    if(currentInner > 0 && numbers[currentInner] < numbers[currentInner - 1]) {
+      alert('ยังไม่เรียงถูก ต้องสลับหรือเลือก "ไม่สลับ" ก่อนนะ! 📍');
+      return;
+    }
+    currentIndex++;
+    if(currentIndex >= numbers.length) {
+      completeLevel();
+      return;
+    }
+    currentInner = currentIndex;
+    inserted = false;
+    updateUI();
+  }
+
+  function completeLevel() {
+    const maxScore = numbers.length * 15;
+    const passScore = Math.floor(maxScore * 0.7);
+    totalScore += score; // เก็บคะแนนสะสมรวมทุกด่าน
+    if(score >= passScore) {
+      if(currentLevel < 3) {
+        alert(`🎉 ยินดีด้วย! ผ่านด่านที่ ${currentLevel} ด้วยคะแนน ${score} คะแนน`);
+        currentLevel++;
+        startGame();
+      } else {
+        showFinalScore();
+        document.getElementById('finalMessage').textContent = `รวมคะแนนทั้งหมดของคุณคือ ${totalScore} คะแนน! 🌟✨`;
+      }
+    } else {
+      alert(`คะแนนไม่ถึง 70% ต้องเล่นด่านนี้ใหม่อีกครั้ง คะแนน: ${score}`);
+      startGame();
+    }
+  }
+
+  function updateUI() {
+    const box = document.getElementById('numberBox');
+    box.innerHTML = '';
+    for(let i=0; i<numbers.length; i++) {
+      const div = document.createElement('div');
+      div.textContent = numbers[i];
+      div.className = 'number';
+      if(i < currentIndex) div.classList.add('sorted');
+      if(i === currentInner && !inserted) div.classList.add('comparing');
+      if(i === currentInner && inserted) div.classList.add('sorted');
+
+      if(i === currentInner && !inserted) {
+        const arrow = document.createElement('div');
+        arrow.className = 'arrow';
+        arrow.textContent = '⬇️';
+        div.appendChild(arrow);
+      }
+      box.appendChild(div);
+    }
+    const explanation = document.getElementById('explanation');
+    if(currentIndex >= numbers.length) {
+      explanation.textContent = `🎉 เรียงเสร็จแล้ว! รวมการเคลื่อนที่ ${totalMoves} ครั้ง`;
+    } else if(!inserted) {
+      if(currentInner > 0) {
+        explanation.textContent = `🔍 เปรียบเทียบเลข ${numbers[currentInner]} กับ ${numbers[currentInner - 1]}`;
+      } else {
+        explanation.textContent = `📍 เลข ${numbers[currentInner]} อยู่ในตำแหน่งแรกแล้ว`;
+      }
+    } else {
+      explanation.textContent = `✅ เลข ${numbers[currentInner]} ถูกแทรกเรียบร้อย! ไปเลขตัวถัดไป`;
+    }
+    document.getElementById('currentScore').textContent = score;
+    document.getElementById('totalScore').textContent = totalScore;
+    document.getElementById('currentLevel').textContent = currentLevel;
+    document.getElementById('totalMoves').textContent = totalMoves;
+
+    // เปิด/ปิดปุ่ม
+    document.getElementById('btnInsert').disabled = !inserted;
+    document.getElementById('btnSwap').disabled = inserted;
+    document.getElementById('btnNoSwap').disabled = inserted;
+  }
+
+  document.getElementById('btnSwap').onclick = handleSwap;
+  document.getElementById('btnNoSwap').onclick = handleNoSwap;
+  document.getElementById('btnInsert').onclick = handleInsert;
+  document.getElementById('btnShuffle').onclick = () => {
+    if(confirm('ต้องการสุ่มเลขใหม่ใช่ไหม?')) startGame();
+  };
+  
+  // เปิดหน้าเมนูตอนโหลด
+  showMenu();
+</script>
+
+</body>
+</html>
+
