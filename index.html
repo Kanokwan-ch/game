@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>เกม Insertion Sort แบบคลาสสิค + หลักการ C++</title>
+<title>Insertion Sort</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
   body {
@@ -145,7 +145,7 @@
 <body>
 
 <div class="container" id="menuScreen">
-  <h2>🌸 เกม Insertion Sort แบบคลาสสิค 🌸</h2>
+  <h2>🌸Insertion Sort🌸</h2>
   <input type="text" id="playerName" placeholder="ชื่อนักเรียน" />
   <select id="classSelect">
     <option value="">-- เลือกห้องเรียน --</option>
@@ -163,12 +163,9 @@
   <ul>
     <li>เกมมี 3 ด่าน ยากขึ้นเรื่อย ๆ</li>
     <li>ต้องผ่านด่านก่อนหน้า เพื่อไปด่านถัดไป</li>
-    <li>ระบบจะสุ่มตัวเลข 5-7 ตัว</li>
     <li>กด "สลับ" หากต้องการสลับเลขสองตำแหน่งที่กำลังเปรียบเทียบ</li>
     <li>กด "ไม่สลับ" หากเลขอยู่ในตำแหน่งถูกต้องแล้ว</li>
     <li>กด "แทรก" เมื่อตัวเลขอยู่ตำแหน่งที่เหมาะสมเพื่อไปเลขถัดไป</li>
-    <li>คะแนน: +10 ทำถูก, -5 ทำผิด</li>
-    <li>ต้องได้คะแนน >= 70% จึงผ่านด่าน</li>
   </ul>
   <button id="btnBackToMenu" type="button">🔙 กลับหน้าแรก</button>
   <button id="btnPlayNow" type="button">🎮 เล่นเลย</button>
@@ -178,8 +175,6 @@
   <h3 id="playerInfo"></h3>
   <div class="stats">
     <div>ด่าน <br /><span id="currentLevel">1</span>/3</div>
-    <div>คะแนนด่านนี้ <br /><span id="currentScore">0</span></div>
-    <div>คะแนนรวม <br /><span id="totalScore">0</span></div>
     <div>เคลื่อนที่ <br /><span id="totalMoves">0</span></div>
   </div>
 
@@ -236,12 +231,6 @@
     rulesScreen.style.display = 'none';
     gameScreen.style.display = 'block';
     finalScoreScreen.style.display = 'none';
-  }
-  function showFinalScore() {
-    menuScreen.style.display = 'none';
-    rulesScreen.style.display = 'none';
-    gameScreen.style.display = 'none';
-    finalScoreScreen.style.display = 'block';
   }
 
   document.getElementById('btnRules').onclick = showRules;
@@ -318,17 +307,6 @@
     }
   }
 
-  function handleNoSwap() {
-    if(currentInner === 0 || numbers[currentInner] >= numbers[currentInner - 1]) {
-      inserted = true;
-      totalMoves++;
-      score += 10;
-      updateUI();
-    } else {
-      alert('ยังไม่ถูกต้อง ต้องสลับก่อนนะ! 🤔');
-      score = Math.max(0, score - 5);
-      updateUI();
-    }
   }
 
   function handleInsert() {
@@ -344,25 +322,6 @@
     currentInner = currentIndex;
     inserted = false;
     updateUI();
-  }
-
-  function completeLevel() {
-    const maxScore = numbers.length * 15;
-    const passScore = Math.floor(maxScore * 0.7);
-    totalScore += score; // เก็บคะแนนสะสมรวมทุกด่าน
-    if(score >= passScore) {
-      if(currentLevel < 3) {
-        alert(`🎉 ยินดีด้วย! ผ่านด่านที่ ${currentLevel} ด้วยคะแนน ${score} คะแนน`);
-        currentLevel++;
-        startGame();
-      } else {
-        showFinalScore();
-        document.getElementById('finalMessage').textContent = `รวมคะแนนทั้งหมดของคุณคือ ${totalScore} คะแนน! 🌟✨`;
-      }
-    } else {
-      alert(`คะแนนไม่ถึง 70% ต้องเล่นด่านนี้ใหม่อีกครั้ง คะแนน: ${score}`);
-      startGame();
-    }
   }
 
   function updateUI() {
